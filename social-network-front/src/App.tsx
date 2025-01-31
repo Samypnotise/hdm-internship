@@ -1,8 +1,26 @@
-import React from "react";
-import "./index.css";
+import React from 'react';
 
-function App() {
-  return <p>Social network</p>;
-}
+import {
+  ApolloClient,
+  ApolloProvider,
+  HttpLink,
+  InMemoryCache,
+} from '@apollo/client';
+
+import './index.css';
+
+const cache = new InMemoryCache({});
+const link = new HttpLink();
+
+const apolloClient = new ApolloClient({
+  cache,
+  link,
+});
+
+const App = () => (
+  <ApolloProvider client={apolloClient}>
+    <p>Social network</p>
+  </ApolloProvider>
+);
 
 export default App;
