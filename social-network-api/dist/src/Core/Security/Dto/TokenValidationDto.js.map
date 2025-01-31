@@ -1,0 +1,1 @@
+{"version":3,"file":"TokenValidationDto.js","sourceRoot":"","sources":["../../../../../src/Core/Security/Dto/TokenValidationDto.ts"],"names":[],"mappings":";;;;;;;;;;;AAAA,6CAAmD;AAGpC,IAAM,kBAAkB,GAAxB,MAAM,kBAAkB;CAGtC,CAAA;AADC;IADC,IAAA,eAAK,EAAC,GAAG,EAAE,CAAC,MAAM,CAAC;;iDACN;AAFK,kBAAkB;IADtC,IAAA,mBAAS,GAAE;GACS,kBAAkB,CAGtC;kBAHoB,kBAAkB"}
