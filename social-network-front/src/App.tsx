@@ -7,7 +7,7 @@ import {
   InMemoryCache,
 } from '@apollo/client';
 
-import './index.css';
+import './assets/global.css';
 
 const cache = new InMemoryCache({});
 const link = new HttpLink();
