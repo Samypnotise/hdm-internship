@@ -1,0 +1,10 @@
+query Login($dto: AuthenticationDto!) {
+  login(dto: $dto) {
+    token,
+    user {
+      id,
+      username,
+    }
+  }
+}
+
