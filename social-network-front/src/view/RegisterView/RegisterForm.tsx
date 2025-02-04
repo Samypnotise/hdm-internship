@@ -1,3 +1,5 @@
+import React, { ChangeEventHandler } from 'react';
+
 import { Link } from 'react-router';
 
 import { cn } from '@/lib/utils';
@@ -10,6 +12,28 @@ import { Label } from '@/components/ui/label';
 import signUpImage from '@/assets/images/sign_up.svg';
 
 const RegisterForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
+  const [username, setUsername] = React.useState<string>('');
+  const [email, setEmail] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('');
+
+  const handleUsernameChange: ChangeEventHandler<HTMLInputElement> =
+    React.useCallback((e) => {
+      const { value } = e.target;
+      setUsername(value);
+    }, []);
+
+  const handleEmailChange: ChangeEventHandler<HTMLInputElement> =
+    React.useCallback((e) => {
+      const { value } = e.target;
+      setEmail(value);
+    }, []);
+
+  const handlePasswordChange: ChangeEventHandler<HTMLInputElement> =
+    React.useCallback((e) => {
+      const { value } = e.target;
+      setPassword(value);
+    }, []);
+
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className="overflow-hidden">
@@ -32,26 +56,37 @@ const RegisterForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
               <div className="grid gap-2">
                 <Label htmlFor="username">Username</Label>
                 <Input
+                  required
                   id="username"
                   type="text"
                   placeholder="Samy DJEMILI"
-                  required
+                  value={username}
+                  onChange={handleUsernameChange}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
+                  required
                   id="email"
                   type="email"
                   placeholder="samy@example.com"
-                  required
+                  value={email}
+                  onChange={handleEmailChange}
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  required
+                  id="password"
+                  type="password"
+                  placeholder="*******"
+                  value={password}
+                  onChange={handlePasswordChange}
+                />
               </div>
               <Button
                 type="submit"
