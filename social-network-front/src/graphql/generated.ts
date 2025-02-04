@@ -83,6 +83,7 @@ export type Query = {
   getUserByEmail: User;
   getUserById: User;
   login: TokenEntity;
+  validateToken: Scalars['Boolean']['output'];
 };
 
 
@@ -110,10 +111,19 @@ export type QueryLoginArgs = {
   dto: AuthenticationDto;
 };
 
+
+export type QueryValidateTokenArgs = {
+  dto: TokenValidationDto;
+};
+
 export type TokenEntity = {
   __typename?: 'TokenEntity';
   token: Scalars['String']['output'];
   user: User;
+};
+
+export type TokenValidationDto = {
+  token: Scalars['String']['input'];
 };
 
 export type User = {
@@ -133,20 +143,38 @@ export type UserDto = {
 };
 
 export type LoginQueryVariables = Exact<{
-  dto: AuthenticationDto;
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 }>;
 
 
-export type LoginQuery = { __typename?: 'Query', login: { __typename?: 'TokenEntity', token: string, user: { __typename?: 'User', id: string, username: string } } };
+export type LoginQuery = { __typename?: 'Query', login: { __typename?: 'TokenEntity', token: string, user: { __typename?: 'User', id: string, username: string, email: string, createdAt: any, updatedAt: any } } };
+
+export type ValidateTokenQueryVariables = Exact<{
+  token: Scalars['String']['input'];
+}>;
+
+
+export type ValidateTokenQuery = { __typename?: 'Query', validateToken: boolean };
+
+export type GetUserByIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetUserByIdQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', id: string, username: string, email: string, createdAt: any, updatedAt: any } };
 
 
 export const LoginDocument = gql`
-    query Login($dto: AuthenticationDto!) {
-  login(dto: $dto) {
+    query Login($email: String!, $password: String!) {
+  login(dto: {email: $email, password: $password}) {
     token
     user {
       id
       username
+      email
+      createdAt
+      updatedAt
     }
   }
 }
@@ -164,7 +192,8 @@ export const LoginDocument = gql`
  * @example
  * const { data, loading, error } = useLoginQuery({
  *   variables: {
- *      dto: // value for 'dto'
+ *      email: // value for 'email'
+ *      password: // value for 'password'
  *   },
  * });
  */
@@ -184,8 +213,92 @@ export type LoginQueryHookResult = ReturnType<typeof useLoginQuery>;
 export type LoginLazyQueryHookResult = ReturnType<typeof useLoginLazyQuery>;
 export type LoginSuspenseQueryHookResult = ReturnType<typeof useLoginSuspenseQuery>;
 export type LoginQueryResult = Apollo.QueryResult<LoginQuery, LoginQueryVariables>;
+export const ValidateTokenDocument = gql`
+    query ValidateToken($token: String!) {
+  validateToken(dto: {token: $token})
+}
+    `;
+
+/**
+ * __useValidateTokenQuery__
+ *
+ * To run a query within a React component, call `useValidateTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useValidateTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useValidateTokenQuery({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useValidateTokenQuery(baseOptions: Apollo.QueryHookOptions<ValidateTokenQuery, ValidateTokenQueryVariables> & ({ variables: ValidateTokenQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ValidateTokenQuery, ValidateTokenQueryVariables>(ValidateTokenDocument, options);
+      }
+export function useValidateTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ValidateTokenQuery, ValidateTokenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ValidateTokenQuery, ValidateTokenQueryVariables>(ValidateTokenDocument, options);
+        }
+export function useValidateTokenSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ValidateTokenQuery, ValidateTokenQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ValidateTokenQuery, ValidateTokenQueryVariables>(ValidateTokenDocument, options);
+        }
+export type ValidateTokenQueryHookResult = ReturnType<typeof useValidateTokenQuery>;
+export type ValidateTokenLazyQueryHookResult = ReturnType<typeof useValidateTokenLazyQuery>;
+export type ValidateTokenSuspenseQueryHookResult = ReturnType<typeof useValidateTokenSuspenseQuery>;
+export type ValidateTokenQueryResult = Apollo.QueryResult<ValidateTokenQuery, ValidateTokenQueryVariables>;
+export const GetUserByIdDocument = gql`
+    query GetUserById($id: String!) {
+  getUserById(id: $id) {
+    id
+    username
+    email
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetUserByIdQuery__
+ *
+ * To run a query within a React component, call `useGetUserByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetUserByIdQuery(baseOptions: Apollo.QueryHookOptions<GetUserByIdQuery, GetUserByIdQueryVariables> & ({ variables: GetUserByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(GetUserByIdDocument, options);
+      }
+export function useGetUserByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserByIdQuery, GetUserByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(GetUserByIdDocument, options);
+        }
+export function useGetUserByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserByIdQuery, GetUserByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(GetUserByIdDocument, options);
+        }
+export type GetUserByIdQueryHookResult = ReturnType<typeof useGetUserByIdQuery>;
+export type GetUserByIdLazyQueryHookResult = ReturnType<typeof useGetUserByIdLazyQuery>;
+export type GetUserByIdSuspenseQueryHookResult = ReturnType<typeof useGetUserByIdSuspenseQuery>;
+export type GetUserByIdQueryResult = Apollo.QueryResult<GetUserByIdQuery, GetUserByIdQueryVariables>;
 export const namedOperations = {
   Query: {
-    Login: 'Login'
+    Login: 'Login',
+    ValidateToken: 'ValidateToken',
+    GetUserById: 'GetUserById'
   }
 }
