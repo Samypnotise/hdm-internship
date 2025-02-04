@@ -1,0 +1,9 @@
+query GetUserById($id: String!) {
+  getUserById(id: $id) {
+    id,
+    username,
+    email,
+    createdAt,
+    updatedAt,
+  }
+}

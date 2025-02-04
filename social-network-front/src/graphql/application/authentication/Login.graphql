@@ -1,9 +1,12 @@
-query Login($dto: AuthenticationDto!) {
-  login(dto: $dto) {
+query Login($email: String!, $password: String!) {
+  login(dto: {email: $email, password: $password}) {
     token,
     user {
       id,
       username,
+      email,
+      createdAt,
+      updatedAt,
     }
   }
 }
