@@ -3,6 +3,7 @@ import TokenEntity from '../Entity/TokenEntity';
 import AuthenticationDto from '../Dto/AuthenticationDto';
 import { BadRequestException } from '@nestjs/common';
 import { AuthService } from '../Service/Authentication/AuthService';
+import TokenValidationDto from '../Dto/TokenValidationDto';
 
 @Resolver(() => TokenEntity)
 export default class AuthenticationResolver {
@@ -16,6 +17,17 @@ export default class AuthenticationResolver {
       const token = await this.authService.createToken(user);
 
       return { token, user };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Query(() => Boolean)
+  async validateToken(@Args('dto') dto: TokenValidationDto) {
+    try {
+      await this.authService.validate(dto.token);
+
+      return true;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
