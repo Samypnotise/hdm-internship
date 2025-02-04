@@ -1,4 +1,6 @@
-import { Link } from 'react-router';
+import React, { ChangeEventHandler } from 'react';
+
+import { Link, useNavigate } from 'react-router-dom';
 
 import { cn } from '@/lib/utils';
 
@@ -7,9 +9,68 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { useLoginLazyQuery } from '@/graphql/generated';
+
 import signInImage from '@/assets/images/sign_in.svg';
+import { toast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
+import { useLocalStorage } from '@/hooks';
+import { connectedUser, isUserConnected } from '@/graphql/apollo/apollo';
 
 const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
+  const navigate = useNavigate();
+
+  const [userId, setUserId] = useLocalStorage('userId', '');
+  const [token, setToken] = useLocalStorage('token', '');
+
+  const [email, setEmail] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('');
+
+  const [login, { loading }] = useLoginLazyQuery();
+
+  const handleEmailChange: ChangeEventHandler<HTMLInputElement> =
+    React.useCallback((e) => {
+      const { value } = e.target;
+      setEmail(value);
+    }, []);
+
+  const handlePasswordChange: ChangeEventHandler<HTMLInputElement> =
+    React.useCallback((e) => {
+      const { value } = e.target;
+      setPassword(value);
+    }, []);
+
+  const handleLogin = React.useCallback(async () => {
+    const { data } = await login({ variables: { email, password } });
+
+    // NOTE: Login failed
+    if (!data) {
+      toast({
+        variant: 'destructive',
+        title: 'Unable to login ...',
+        description: 'Please verify your credentials.',
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    } else {
+      // NOTE: Login successful
+      toast({
+        variant: 'default',
+        title: 'Login successful !',
+        description: `Welcome back ${data.login.user.username} !`,
+      });
+
+      // NOTE: Saving these in local storage
+      setUserId(data.login.user.id);
+      setToken(data.login.token);
+
+      // NOTE: Updating apollo variables
+      isUserConnected(true);
+      connectedUser(data.login.user);
+
+      navigate('/home', { replace: true });
+    }
+  }, [login, email, password, setUserId, setToken, navigate]);
+
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className="overflow-hidden">
@@ -25,10 +86,12 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
+                  required
                   id="email"
                   type="email"
                   placeholder="samy@example.com"
-                  required
+                  onChange={handleEmailChange}
+                  value={email}
                 />
               </div>
               <div className="grid gap-2">
@@ -42,11 +105,19 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  required
+                  id="password"
+                  type="password"
+                  placeholder="*******"
+                  value={password}
+                  onChange={handlePasswordChange}
+                />
               </div>
               <Button
-                type="submit"
                 className="w-full bg-indigo-500 hover:bg-indigo-400"
+                onClick={handleLogin}
+                disabled={loading}
               >
                 Login
               </Button>
